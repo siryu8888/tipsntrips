@@ -11,13 +11,13 @@ target 'tipsntrips' do
   pod ‘Firebase/Database’
 
   pod 'Material', '~> 1.0'
-  pod 'Spring', :git => 'https://github.com/MengTo/Spring.git', :branch => 'swift2'
-  pod 'Kingfisher', '~> 2.0'
+  pod 'Spring', :git => 'https://github.com/MengTo/Spring.git', :branch => 'swift3'
+  pod 'Kingfisher', '~> 3.0'
   pod 'ChameleonFramework/Swift'
   pod 'UIColor_Hex_Swift', '~> 1.9'
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
   pod 'DCPathButton', '~> 2.1.3'
-  pod 'Alamofire', '~> 3.0'
+  pod 'Alamofire', '~> 4.0'
   pod 'ReachabilitySwift', :git => 'https://github.com/ashleymills/Reachability.swift'
   pod "CZPicker"
   pod 'IQKeyboardManagerSwift'
@@ -32,3 +32,11 @@ target 'tipsntrips' do
   end
 
 end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '3.0'
+        end
+    end
+  end

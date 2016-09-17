@@ -38,7 +38,7 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
      * Check Connection
      * ===================
      **/
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         do {
             reachability = try Reachability.reachabilityForInternetConnection()
         } catch {
@@ -46,7 +46,7 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
             return
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MainTabBarViewController.reachabilityChanged(_:)),name: ReachabilityChangedNotification,object: reachability)
+        NotificationCenter.default.addObserver(self, selector: #selector(MainTabBarViewController.reachabilityChanged(_:)),name: ReachabilityChangedNotification,object: reachability)
         do{
             try reachability?.startNotifier()
         }catch{
@@ -54,7 +54,7 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
         }
     }
     
-    func reachabilityChanged(note: NSNotification) {
+    func reachabilityChanged(_ note: Notification) {
 
         let reachability = note.object as! Reachability
         
@@ -68,32 +68,32 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
 //          Only Running on login phase
             if UserProfile.sharedInstance.uid == ""{
             
-                let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .Alert)
-                alert.view.tintColor = UIColor.blackColor()
-                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(10, 5, 50, 50)) as UIActivityIndicatorView
+                let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .alert)
+                alert.view.tintColor = UIColor.black
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50)) as UIActivityIndicatorView
                 loadingIndicator.hidesWhenStopped = true
-                loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+                loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
                 loadingIndicator.startAnimating();
                 alert.view.addSubview(loadingIndicator)
-                presentViewController(alert, animated: true, completion: nil)
+                present(alert, animated: true, completion: nil)
             }
             
             DataService.sharedInstance.isLoggedIn({ (success, msg) in
                 if(!success){
                     print(msg)
-                    self.dismissViewControllerAnimated(true, completion: { 
-                        self.performSegueWithIdentifier("loginModal", sender: self)
+                    self.dismiss(animated: true, completion: { 
+                        self.performSegue(withIdentifier: "loginModal", sender: self)
                     })
                 }
                 print("msg = \(msg)")
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
                 DataService.sharedInstance.initiateCategories()
                 
             })
             
         } else {
             let alert = AlertManager.sharedInstance.alertOKOnly("No Internet Connection", msg: "Please check your internet connection")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             print("Network not reachable")
         }
     }
@@ -106,10 +106,10 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
      **/
     
     func configureDCPathButton() {        
-        dcPathButton = DCPathButton(centerImage: UIImage(named: "centerpath-icon"), highlightedImage: UIImage(named: "centerpath-icon"))
+        dcPathButton = DCPathButton(center: UIImage(named: "centerpath-icon"), highlightedImage: UIImage(named: "centerpath-icon"))
         
         dcPathButton.delegate = self
-        dcPathButton.dcButtonCenter = CGPointMake(self.view.bounds.width/2, self.view.bounds.height - 25.5)
+        dcPathButton.dcButtonCenter = CGPoint(x: self.view.bounds.width/2, y: self.view.bounds.height - 25.5)
         dcPathButton.allowSounds = true
         dcPathButton.allowCenterButtonRotation = true
         dcPathButton.bloomRadius = 90
@@ -122,7 +122,7 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
         self.view.addSubview(dcPathButton)
         
     }
-    func pathButton(dcPathButton: DCPathButton!, clickItemButtonAtIndex itemButtonIndex: UInt) {
+    func pathButton(_ dcPathButton: DCPathButton!, clickItemButtonAt itemButtonIndex: UInt) {
         
         switch itemButtonIndex {
         case 0 :
@@ -133,7 +133,7 @@ class MainTabBarViewController: UITabBarController , DCPathButtonDelegate{
             break
         default :
 //            print("TipsDrop Clicked")
-            performSegueWithIdentifier("postTipsdrop", sender: self)
+            performSegue(withIdentifier: "postTipsdrop", sender: self)
         }
         
     }

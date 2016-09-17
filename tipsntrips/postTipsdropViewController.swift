@@ -47,7 +47,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
         
         
         let tapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(postTipsdropViewController.imageTapped(_:)))
-        coverImageView.userInteractionEnabled = true
+        coverImageView.isUserInteractionEnabled = true
         coverImageView.addGestureRecognizer(tapGestureRecognizer)
     }
 
@@ -56,21 +56,21 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func cancelBtnClicked(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func cancelBtnClicked(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
 
-    @IBAction func postBtnClicked(sender: AnyObject) {
+    @IBAction func postBtnClicked(_ sender: AnyObject) {
         
         if contentTv.text == ""{
             let alert = AlertManager.sharedInstance.alertOKOnly("Content Required", msg: "Please fill the content")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
         else if titleTf.text == ""{
             let alert = AlertManager.sharedInstance.alertOKOnly("Title Required", msg: "Please fill the title")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }else{
-            retry(3, task: startUploading,
+            retry(3, task: startUploading as! ((Void) -> Void, (Error) -> Void) -> Void,
                   success: {
                     print("Succeeded")
                 },
@@ -89,30 +89,30 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
     }
     */
     
-    @IBAction func pickingCategory(sender: AnyObject) {
+    @IBAction func pickingCategory(_ sender: AnyObject) {
         let picker = CZPickerView(headerTitle: "Pick Category", cancelButtonTitle: "Cancel", confirmButtonTitle: "Confirm")
-        picker.headerBackgroundColor = UIColor.flatGrayColorDark()
-        picker.confirmButtonBackgroundColor = UIColor.flatGrayColorDark()
-        picker.delegate = self
-        picker.dataSource = self
-        picker.needFooterView = true
-        picker.show()
+        picker?.headerBackgroundColor = UIColor.flatGrayColorDark()
+        picker?.confirmButtonBackgroundColor = UIColor.flatGrayColorDark()
+        picker?.delegate = self
+        picker?.dataSource = self
+        picker?.needFooterView = true
+        picker?.show()
     }
-    func numberOfRowsInPickerView(pickerView: CZPickerView!) -> Int {
+    func numberOfRows(in pickerView: CZPickerView!) -> Int {
         return Categories.sharedInstance.category.count
     }
     
-    func czpickerView(pickerView: CZPickerView!, imageForRow row: Int) -> UIImage! {
+    func czpickerView(_ pickerView: CZPickerView!, imageForRow row: Int) -> UIImage! {
         
         let img = Categories.sharedInstance.category[row].categoryImage.image
         return img
     }
     
-    func czpickerView(pickerView: CZPickerView!, titleForRow row: Int) -> String! {
+    func czpickerView(_ pickerView: CZPickerView!, titleForRow row: Int) -> String! {
         return Categories.sharedInstance.category[row].categoryName
     }
     
-    func czpickerView(pickerView: CZPickerView!, didConfirmWithItemAtRow row: Int){
+    func czpickerView(_ pickerView: CZPickerView!, didConfirmWithItemAtRow row: Int){
         categoryImage.image = Categories.sharedInstance.category[row].categoryImage.image
         categoryLabel.text = Categories.sharedInstance.category[row].categoryName
         self.categoryName = Categories.sharedInstance.category[row].categoryName
@@ -120,73 +120,73 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
         self.categoryInactiveImgUrl = Categories.sharedInstance.category[row].icon_inactive_url
     }
 
-    func imageTapped(img: AnyObject)
+    func imageTapped(_ img: AnyObject)
     {
         let alert = UIAlertController(title: "Please choose source", message: nil, preferredStyle:
-            .ActionSheet) // Can also set to .Alert if you prefer
+            .actionSheet) // Can also set to .Alert if you prefer
         
-        let cameraAction = UIAlertAction(title: "Camera", style: .Default) { (action) -> Void in
-            self.showPhotoPicker(.Camera)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { (action) -> Void in
+            self.showPhotoPicker(.camera)
         }
         
         alert.addAction(cameraAction)
-        let libraryAction = UIAlertAction(title: "Library", style: .Default) { (action) -> Void in
-            self.showPhotoPicker(.PhotoLibrary)
+        let libraryAction = UIAlertAction(title: "Library", style: .default) { (action) -> Void in
+            self.showPhotoPicker(.photoLibrary)
         }
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
             (alertAction: UIAlertAction!) in
-            alert.dismissViewControllerAnimated(true, completion: nil)
+            alert.dismiss(animated: true, completion: nil)
         }))
         
         alert.addAction(libraryAction)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
             img = pickedImage
         }
         
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
         photoEditorShow()
     }
     
     
-    func showPhotoPicker(source: UIImagePickerControllerSourceType) {
+    func showPhotoPicker(_ source: UIImagePickerControllerSourceType) {
         imgPicker.sourceType = source
-        presentViewController(imgPicker, animated: true, completion: nil )
+        present(imgPicker, animated: true, completion: nil )
     }
     
     
     func photoEditorShow()
     {
-        AdobeUXAuthManager.sharedManager().setAuthenticationParametersWithClientID(ClientID, clientSecret: ClientSecret, enableSignUp: false)
+        AdobeUXAuthManager.shared().setAuthenticationParametersWithClientID(ClientID, clientSecret: ClientSecret, enableSignUp: false)
         
         //        AdobeImageEditorCustomization.setToolOrder([kAdobeImageEditorCrop])
         
         let editorController = AdobeUXImageEditorViewController.init(image: self.img)
         
         editorController.delegate = self
-        self.presentViewController(editorController, animated: true,completion: nil)
+        self.present(editorController, animated: true,completion: nil)
         
     }
     
-    func photoEditor(editor: AdobeUXImageEditorViewController, finishedWithImage image: UIImage?) {
+    func photoEditor(_ editor: AdobeUXImageEditorViewController, finishedWith image: UIImage?) {
         coverImageView.image = image
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
-    func photoEditorCanceled(editor: AdobeUXImageEditorViewController) {
-        dismissViewControllerAnimated(true, completion: nil)
+    func photoEditorCanceled(_ editor: AdobeUXImageEditorViewController) {
+        dismiss(animated: true, completion: nil)
     }
 
     
-    func startUploading(success: Void -> Void, failure: ErrorType -> Void) {
+    func startUploading(_ success: (Void) -> Void, failure: @escaping (Error) -> Void) {
         let image = coverImageView.image
-        let timestamp: String = "\(NSDate().timeIntervalSince1970 * 1000)"
+        let timestamp: String = "\(Date().timeIntervalSince1970 * 1000)"
 
         // Begin upload
         Alamofire.upload(.POST,
@@ -202,7 +202,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
             encodingMemoryThreshold: Manager.MultipartFormDataEncodingMemoryThreshold,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
-                case .Success(let upload, _, _):
+                case .success(let upload, _, _):
                     upload.responseJSON { response in
                         self.navigationController?.finishProgress()
                         
@@ -221,26 +221,26 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
                             ]
                             
                             
-                            let alertController = UIAlertController(title: "Upload Success", message: "TipsDrop Posted!", preferredStyle: .Alert)
-                            let defaultAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) {
+                            let alertController = UIAlertController(title: "Upload Success", message: "TipsDrop Posted!", preferredStyle: .alert)
+                            let defaultAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                                 UIAlertAction in
                                 let post = DataService.sharedInstance.getMyTipsdropRef().child(UserProfile.sharedInstance.uid).childByAutoId()
                                 post.updateChildValues(params)
                                 print("Key = \(post.key)")
                                 DataService.sharedInstance.getUserRef().child(UserProfile.sharedInstance.uid).child("mytipsdrop").updateChildValues(["\(post.key)":"true"])
-                                self.dismissViewControllerAnimated(true, completion: nil)
+                                self.dismiss(animated: true, completion: nil)
                             }
                             alertController.addAction(defaultAction)
-                            self.presentViewController(alertController, animated: true, completion: nil)
+                            self.present(alertController, animated: true, completion: nil)
                         }
                     }
                     upload.progress { _, totalBytesRead, totalBytesExpectedToRead in
                         let progress = Float(totalBytesRead)/Float(totalBytesExpectedToRead)
-                        dispatch_async(dispatch_get_main_queue()) {
+                        DispatchQueue.main.async {
                             self.navigationController?.setProgress(CGFloat(progress), animated: true)
                         }
                     }
-                case .Failure(let encodingError):
+                case .failure(let encodingError):
                     print(encodingError)
                     failure(encodingError)
                     self.navigationController?.cancelProgress()
@@ -250,9 +250,9 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate,CZPickerViewData
         
     }
     
-    func retry(numberOfTimes: Int, task: (success: Void -> Void, failure: ErrorType -> Void) -> Void, success: Void -> Void, failure: ErrorType -> Void) {
-        task(success: success,
-             failure: { error in
+    func retry(_ numberOfTimes: Int, task: @escaping (_ success: (Void) -> Void, _ failure: (Error) -> Void) -> Void, success: @escaping (Void) -> Void, failure: @escaping (Error) -> Void) {
+        task(success,
+             { error in
                 // do we have retries left? if yes, call retry again
                 // if not, report error
                 if numberOfTimes > 1 {

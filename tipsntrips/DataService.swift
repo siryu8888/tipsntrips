@@ -14,12 +14,12 @@ import SwiftyJSON
 class DataService: NSObject {
     static let sharedInstance:DataService = DataService()
     
-    typealias CompletionHandler = (success:Bool,msg:String) ->Void
+    typealias CompletionHandler = (_ success:Bool,_ msg:String) ->Void
     
-    private var _BASE_REF :FIRDatabaseReference = FIRDatabase.database().reference()
-    private var _USER_REF :FIRDatabaseReference = FIRDatabase.database().reference().child("users")
-    private var _MY_TIPSDROP__REF : FIRDatabaseReference = FIRDatabase.database().reference().child("mytipsdrop")
-    private var _CATEGORIES_REF:FIRDatabaseReference = FIRDatabase.database().reference().child("categories")
+    fileprivate var _BASE_REF :FIRDatabaseReference = FIRDatabase.database().reference()
+    fileprivate var _USER_REF :FIRDatabaseReference = FIRDatabase.database().reference().child("users")
+    fileprivate var _MY_TIPSDROP__REF : FIRDatabaseReference = FIRDatabase.database().reference().child("mytipsdrop")
+    fileprivate var _CATEGORIES_REF:FIRDatabaseReference = FIRDatabase.database().reference().child("categories")
     
     
     func getBaseRef()->FIRDatabaseReference
@@ -38,7 +38,7 @@ class DataService: NSObject {
     }
     
     func initiateCategories(){
-        _CATEGORIES_REF.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+        _CATEGORIES_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             
             if snapshot.value is NSNull{
                 print("Category Not Found")
@@ -52,7 +52,7 @@ class DataService: NSObject {
                         let val = JSON(value)
                         dict.icon_active_url = val["icon_active_url"].string!
                         dict.icon_inactive_url = val["icon_inactive_url"].string!
-                        dict.categoryImage.kf_setImageWithURL(NSURL(string: dict.icon_active_url)!)
+                        dict.categoryImage.kf_setImageWithURL(URL(string: dict.icon_active_url)!)
                         Categories.sharedInstance.category.append(dict)
                     }
                 }
@@ -94,11 +94,11 @@ class DataService: NSObject {
 //            })
 //        }
 //    }
-    func isLoggedIn(status:CompletionHandler)
+    func isLoggedIn(_ status:@escaping CompletionHandler)
     {
         if UserProfile.sharedInstance.uid == "" {
             if let user = FIRAuth.auth()?.currentUser{
-                _USER_REF.child(user.uid).observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                _USER_REF.child(user.uid).observeSingleEvent(of: .value, with: { (snapshot) in
                     if(snapshot.value is NSNull){
                         print("not found")
                     }
@@ -108,46 +108,46 @@ class DataService: NSObject {
                             UserProfile.sharedInstance.name  = allProfile["display_name"] as! String
                             UserProfile.sharedInstance.email = allProfile["email"] as? String
                             if(allProfile["login_provider"] as! String == "FACEBOOK"){
-                                UserProfile.sharedInstance.setPhotoUrl(NSURL(string: (allProfile["photo_url"] as? String)!)!)
+                                UserProfile.sharedInstance.setPhotoUrl(URL(string: (allProfile["photo_url"] as? String)!)!)
                                 print(UserProfile.sharedInstance.photo_url)
                             }
                         }
                     }
-                    status(success: true, msg: "User Logged In")
+                    status(true, "User Logged In")
                     return
                 })
                 
                 
             }else{
-                status(success: false, msg: "User Not Logged In")
+                status(false, "User Not Logged In")
                 return
             }
         }
         else{
-            status(success: false, msg: "User Not Logged In")
+            status(false, "User Not Logged In")
             return
         }
 
         
     }
     
-    func authWithEmail(email:String,pass:String,status:CompletionHandler)
+    func authWithEmail(_ email:String,pass:String,status:@escaping CompletionHandler)
     {
-        FIRAuth.auth()?.signInWithEmail(email, password: pass) { (user, error) in
+        FIRAuth.auth()?.signIn(withEmail: email, password: pass) { (user, error) in
             if error == nil{
                 UserProfile.sharedInstance.uid = (user?.uid)!
-                status(success: true, msg: "Logged In")
+                status(true, "Logged In")
                 return
             }else{
-                status(success: false, msg: (error?.localizedDescription)!)
+                status(false, (error?.localizedDescription)!)
                 return
             }
         }
     }
     
-    func authWithFB(credential:FIRAuthCredential,status:CompletionHandler)
+    func authWithFB(_ credential:FIRAuthCredential,status:@escaping CompletionHandler)
     {
-        FIRAuth.auth()?.signInWithCredential(credential) { (user, error) in
+        FIRAuth.auth()?.signIn(with: credential) { (user, error) in
             print(error.debugDescription)
             
             self.getFBProfilePicture({ (success, msg) in
@@ -165,11 +165,11 @@ class DataService: NSObject {
                                 "login_provider" : "FACEBOOK"
                             ]
                             DataService.sharedInstance.getUserRef().child(UserProfile.sharedInstance.uid).updateChildValues(params)
-                            status(success: true, msg: "Logged In")
+                            status(true, "Logged In")
                             return
                         }
                     }else{
-                        status(success: false, msg: (error?.localizedDescription)!)
+                        status(false, (error?.localizedDescription)!)
                         return
                     }
                 }
@@ -178,16 +178,16 @@ class DataService: NSObject {
         }
     }
     
-    func getFBProfilePicture(completionHandler:CompletionHandler)
+    func getFBProfilePicture(_ completionHandler:@escaping CompletionHandler)
     {
         
-        let profilePict = FBSDKGraphRequest(graphPath: "me/picture", parameters: ["height":300,"width":300,"redirect":false], HTTPMethod: "GET")
-        profilePict.startWithCompletionHandler { (connection, result, error) in
+        let profilePict = FBSDKGraphRequest(graphPath: "me/picture", parameters: ["height":300,"width":300,"redirect":false], httpMethod: "GET")
+        profilePict?.start { (connection, result, error) in
             if(error == nil){
                 let data = JSON(result)
                 for _ in 0 ..< data.count {
                     print(data["data"]["url"])
-                    UserProfile.sharedInstance.photo_url = NSURL(string:data["data"]["url"].string!)!
+                    UserProfile.sharedInstance.photo_url = URL(string:data["data"]["url"].string!)!
                     print("Finish Get PP")
                     completionHandler(success: true, msg: "Finish Fetching PP")
                     

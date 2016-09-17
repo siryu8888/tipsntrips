@@ -22,9 +22,9 @@ class MyProfileCollectionViewController: UICollectionViewController {
     
     
     var layout = UICollectionViewFlowLayout()
-    private let leftAndRightPaddings : CGFloat = 1.0
-    private let numberOfItemsPerRow : CGFloat = 3.0
-    private let heightAdjustment : CGFloat  = 30
+    fileprivate let leftAndRightPaddings : CGFloat = 1.0
+    fileprivate let numberOfItemsPerRow : CGFloat = 3.0
+    fileprivate let heightAdjustment : CGFloat  = 30
     var width:CGFloat = 0
     var startingIndex:UInt = 0
     
@@ -32,11 +32,11 @@ class MyProfileCollectionViewController: UICollectionViewController {
     var tipsdropID :[String] = [String]()
     var tipsdropIdx = 0
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         print("UID = \(UserProfile.sharedInstance.uid)")
         if UserProfile.sharedInstance.uid != "" {
             
-            DataService.sharedInstance.getUserRef().child(UserProfile.sharedInstance.uid).observeEventType(.Value, withBlock: { (snapshot) in
+            DataService.sharedInstance.getUserRef().child(UserProfile.sharedInstance.uid).observe(.value, with: { (snapshot) in
                 if(snapshot.value is NSNull){
                     print("not found")
                 }
@@ -45,7 +45,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
                         UserProfile.sharedInstance.name  = allProfile["display_name"] as! String
                         UserProfile.sharedInstance.email = allProfile["email"] as? String
                         if(allProfile["login_provider"] as! String == "FACEBOOK"){
-                            UserProfile.sharedInstance.setPhotoUrl(NSURL(string: (allProfile["photo_url"] as? String)!)!)
+                            UserProfile.sharedInstance.setPhotoUrl(URL(string: (allProfile["photo_url"] as? String)!)!)
                             print(UserProfile.sharedInstance.photo_url)
                         }
                     }
@@ -70,19 +70,19 @@ class MyProfileCollectionViewController: UICollectionViewController {
         
         // Do any additional setup after loading the view.
         var nib = UINib(nibName: "ProfileCollectionViewCell", bundle: nil)
-        self.collectionView?.registerNib(nib, forCellWithReuseIdentifier: myProfile)
+        self.collectionView?.register(nib, forCellWithReuseIdentifier: myProfile)
         nib = UINib(nibName: "TabMenuCollectionViewCell", bundle: nil)
-        self.collectionView?.registerNib(nib, forCellWithReuseIdentifier: tabCell)
+        self.collectionView?.register(nib, forCellWithReuseIdentifier: tabCell)
         
 //      Register Tipsdrop NIB
         nib = UINib(nibName: "TipsDropStackCollectionViewCell", bundle: nil)
-        self.collectionView?.registerNib(nib, forCellWithReuseIdentifier: freeCustomer)
+        self.collectionView?.register(nib, forCellWithReuseIdentifier: freeCustomer)
         nib = UINib(nibName: "TipsDropPriorityCustomerCollectionViewCell", bundle: nil)
-        self.collectionView?.registerNib(nib, forCellWithReuseIdentifier: priorityCustomer)
+        self.collectionView?.register(nib, forCellWithReuseIdentifier: priorityCustomer)
 
         
         
-        self.collectionView?.backgroundColor = UIColor.whiteColor()
+        self.collectionView?.backgroundColor = UIColor.white
         layout = collectionViewLayout as! UICollectionViewFlowLayout
         layout.itemSize = CGSize(width: width, height: width)
         
@@ -93,7 +93,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
         registerListenerTipsdrop { (result) in
             self.tipsdropIdx = 0
             print("Result = \(result)")
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 self.loadTipsdropDetail()
                 
             }
@@ -106,38 +106,38 @@ class MyProfileCollectionViewController: UICollectionViewController {
         super.didReceiveMemoryWarning()
     }
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return TipsDrops.sharedInstance.tipsDrop.count+2
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        if indexPath.row == 0{
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(myProfile , forIndexPath: indexPath) as! ProfileCollectionViewCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if (indexPath as NSIndexPath).row == 0{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: myProfile , for: indexPath) as! ProfileCollectionViewCell
             cell.profileName.text = UserProfile.sharedInstance.name
             if UserProfile.sharedInstance.photo_url != nil{
                 cell.profilePhoto.kf_setImageWithURL(UserProfile.sharedInstance.getPhotoUrl())
             }
             return cell
             
-        }else if indexPath.row == 1{
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(tabCell , forIndexPath: indexPath) as! TabMenuCollectionViewCell
+        }else if (indexPath as NSIndexPath).row == 1{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: tabCell , for: indexPath) as! TabMenuCollectionViewCell
             return cell
         }else{
             
            
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier(freeCustomer, forIndexPath: indexPath) as! TipsDropStackCollectionViewCell
-            cell.picture.kf_setImageWithURL(TipsDrops.sharedInstance.tipsDrop[indexPath.row-2].tipsDropImgUrl)
-            cell.titleLabel.text = TipsDrops.sharedInstance.tipsDrop[indexPath.row-2].tipsDropTitle
-            cell.categoryIcon.kf_setImageWithURL(TipsDrops.sharedInstance.tipsDrop[indexPath.row - 2 ].tipsDropCategoryImgUrl)
-            cell.commentCount.text = String(TipsDrops.sharedInstance.tipsDrop[indexPath.row - 2].tipsDropComment)
-            cell.likeCount.text = String(TipsDrops.sharedInstance.tipsDrop[indexPath.row - 2].tipsDropLike)
-            if(TipsDrops.sharedInstance.tipsDrop.count == indexPath.row - 2)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: freeCustomer, for: indexPath) as! TipsDropStackCollectionViewCell
+            cell.picture.kf_setImageWithURL(TipsDrops.sharedInstance.tipsDrop[(indexPath as NSIndexPath).row-2].tipsDropImgUrl)
+            cell.titleLabel.text = TipsDrops.sharedInstance.tipsDrop[(indexPath as NSIndexPath).row-2].tipsDropTitle
+            cell.categoryIcon.kf_setImageWithURL(TipsDrops.sharedInstance.tipsDrop[(indexPath as NSIndexPath).row - 2 ].tipsDropCategoryImgUrl)
+            cell.commentCount.text = String(TipsDrops.sharedInstance.tipsDrop[(indexPath as NSIndexPath).row - 2].tipsDropComment)
+            cell.likeCount.text = String(TipsDrops.sharedInstance.tipsDrop[(indexPath as NSIndexPath).row - 2].tipsDropLike)
+            if(TipsDrops.sharedInstance.tipsDrop.count == (indexPath as NSIndexPath).row - 2)
             {
-                startingIndex = UInt(indexPath.row-2)
+                startingIndex = UInt((indexPath as NSIndexPath).row-2)
             }
             
             return cell
@@ -147,32 +147,32 @@ class MyProfileCollectionViewController: UICollectionViewController {
         return UICollectionViewCell()
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        if(indexPath.row == 0)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        if((indexPath as NSIndexPath).row == 0)
         {
-            return CGSizeMake(self.view.frame.width, 250)
+            return CGSize(width: self.view.frame.width, height: 250)
         }
-        else if(indexPath.row == 1)
+        else if((indexPath as NSIndexPath).row == 1)
         {
-            return CGSizeMake(self.view.frame.width, 45)
+            return CGSize(width: self.view.frame.width, height: 45)
         }
         else{
 //          Tipsdrop Cell
-            return CGSizeMake(self.view.frame.width, 90)
+            return CGSize(width: self.view.frame.width, height: 90)
         }
-        return CGSizeMake(self.view.frame.width, 250)
+        return CGSize(width: self.view.frame.width, height: 250)
     }
 
-    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if(indexPath.row > 1){
-            self.choosenIndexPath = indexPath.row-2
-            self.performSegueWithIdentifier("tipsdropDetail", sender: self)
+        if((indexPath as NSIndexPath).row > 1){
+            self.choosenIndexPath = (indexPath as NSIndexPath).row-2
+            self.performSegue(withIdentifier: "tipsdropDetail", sender: self)
         }
         
     }
     
-    func loadTipsdropDetail( startIdx:Int = 0 ){
+    func loadTipsdropDetail( _ startIdx:Int = 0 ){
         print("Counted ID = \(self.tipsdropID.count)")
         print("Tipsdrop IDX = \(self.tipsdropIdx)")
         var endIndex = startIdx
@@ -183,22 +183,22 @@ class MyProfileCollectionViewController: UICollectionViewController {
                 .child(UserProfile.sharedInstance.uid)
                 .queryOrderedByKey()
                 
-                .queryStartingAtValue(self.tipsdropID[startIdx])
+                .queryStarting(atValue: self.tipsdropID[startIdx])
                 if(self.tipsdropID.count > 10){
                     print("Load 10")
                     endIndex += 10
-                    query.queryEndingAtValue(self.tipsdropID[endIndex])
+                    query.queryEnding(atValue: self.tipsdropID[endIndex])
                 }else{
                     print("Masuk Last 10")
                     endIndex = (tipsdropID.count - 1)
-                    query.queryEndingAtValue(self.tipsdropID[endIndex])
+                    query.queryEnding(atValue: self.tipsdropID[endIndex])
                 }
                 
 
                 
 //                print("Start Value = \(self.tipsdropID[0])")
 //                print("End Value = \(self.tipsdropID[2])")
-                query.observeSingleEventOfType(.Value, withBlock: {(snapshot) in
+                query.observeSingleEvent(of: .value, with: {(snapshot) in
                     if snapshot.value is NSNull{
                         print("Not Found")
                         
@@ -220,7 +220,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
                                 dict.tipsDropLike = Int(value[self.tipsdropID[i]]!["like_counter"] as! String)!
                                 dict.tipsDropComment = Int(value[self.tipsdropID[i]]!["comment_counter"]as!String)!
                                 dict.tipsDropContent = value[self.tipsdropID[i]]!["content"] as! String
-                                dict.tipsDropImgUrl = NSURL(string:value[self.tipsdropID[i]]!["cover_photo_url"] as! String)!
+                                dict.tipsDropImgUrl = URL(string:value[self.tipsdropID[i]]!["cover_photo_url"] as! String)!
                                 dict.tipsDropAuthorUID = UserProfile.sharedInstance.uid
                                 dict.tipsDropAuthorName = UserProfile.sharedInstance.name
                                 dict.tipsDropAuthorImgUrl = UserProfile.sharedInstance.photo_url
@@ -229,7 +229,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
 
                             }
 //                          Sorting Descending by timestamp
-                            TipsDrops.sharedInstance.tipsDrop.sortInPlace({$0.timestamp > $1.timestamp})
+                            TipsDrops.sharedInstance.tipsDrop.sort(by: {$0.timestamp > $1.timestamp})
                             self.collectionView?.reloadData()
                         }
                     }
@@ -242,7 +242,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
         
     }
     
-    func registerListenerTipsdrop(completion: (result: String) -> Void){
+    func registerListenerTipsdrop(_ completion: @escaping (_ result: String) -> Void){
         
         if UserProfile.sharedInstance.uid != ""{
            
@@ -250,7 +250,7 @@ class MyProfileCollectionViewController: UICollectionViewController {
                 .child(UserProfile.sharedInstance.uid)
                 .child("mytipsdrop")
                 .queryOrderedByKey()
-            query.observeEventType(.ChildAdded, withBlock: {(snapshot) in
+            query.observe(.childAdded, with: {(snapshot) in
                 if snapshot.value is NSNull{
                     print("Not Found")
                 }else{
@@ -258,18 +258,18 @@ class MyProfileCollectionViewController: UICollectionViewController {
                     self.tipsdropID.append(snapshot.key as String)
                     if let value = snapshot.value as? [String:AnyObject]{
                         print("val = \(value)")
-                        self.tipsdropID.append(String(value))
+                        self.tipsdropID.append(String(describing: value))
 
                     }
                 }
-                completion(result: "Looping")
+                completion("Looping")
             })
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if(segue.identifier == "tipsdropDetail"){
-            let vc : TipsdropDetailViewController  = segue.destinationViewController as! TipsdropDetailViewController
+            let vc : TipsdropDetailViewController  = segue.destination as! TipsdropDetailViewController
             vc.authorName = TipsDrops.sharedInstance.tipsDrop[choosenIndexPath].tipsDropAuthorName!
             vc.authorImg.kf_setImageWithURL(TipsDrops.sharedInstance.tipsDrop[choosenIndexPath].tipsDropAuthorImgUrl!)
             

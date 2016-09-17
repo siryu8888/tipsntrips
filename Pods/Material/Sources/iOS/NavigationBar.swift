@@ -32,9 +32,9 @@ import UIKit
 
 /// NavigationBar styles.
 public enum NavigationBarStyle {
-	case Tiny
-	case Default
-	case Medium
+	case tiny
+	case `default`
+	case medium
 }
 
 public extension UINavigationBar {
@@ -50,45 +50,47 @@ public extension UINavigationBar {
 }
 
 @IBDesignable
-public class NavigationBar : UINavigationBar {
+open class NavigationBar : UINavigationBar {
 	/// NavigationBarStyle value.
-	public var navigationBarStyle: NavigationBarStyle = .Default
+	open var navigationBarStyle: NavigationBarStyle = .default
+	
+	internal var animating: Bool = false
 	
 	/// Will render the view.
-	public var willRenderView: Bool {
-		return 0 < width
+	open var willRenderView: Bool {
+		return 0 < width && 0 < height
 	}
 	
 	/// A preset wrapper around contentInset.
-	public var contentInsetPreset: MaterialEdgeInset = .None {
+	open var contentInsetPreset: MaterialEdgeInset = .none {
 		didSet {
 			contentInset = MaterialEdgeInsetToValue(contentInsetPreset)
 		}
 	}
 	
 	/// A wrapper around grid.contentInset.
-	@IBInspectable public var contentInset: UIEdgeInsets = UIEdgeInsetsZero {
+	@IBInspectable open var contentInset: UIEdgeInsets = UIEdgeInsets.zero {
 		didSet {
 			layoutSubviews()
 		}
 	}
 	
 	/// A preset wrapper around spacing.
-	public var spacingPreset: MaterialSpacing = .None {
+	open var spacingPreset: MaterialSpacing = .none {
 		didSet {
 			spacing = MaterialSpacingToValue(spacingPreset)
 		}
 	}
 	
 	/// A wrapper around grid.spacing.
-	@IBInspectable public var spacing: CGFloat = 0 {
+	@IBInspectable open var spacing: CGFloat = 0 {
 		didSet {
 			layoutSubviews()
 		}
 	}
 	
 	/// Grid cell factor.
-	@IBInspectable public var gridFactor: CGFloat = 24 {
+	@IBInspectable open var gridFactor: CGFloat = 24 {
 		didSet {
 			assert(0 < gridFactor, "[Material Error: gridFactor must be greater than 0.]")
 			layoutSubviews()
@@ -99,7 +101,7 @@ public class NavigationBar : UINavigationBar {
 	The back button image writes to the backIndicatorImage property and
 	backIndicatorTransitionMaskImage property.
 	*/
-	@IBInspectable public var backButtonImage: UIImage? {
+	@IBInspectable open var backButtonImage: UIImage? {
 		get {
 			return backIndicatorImage
 		}
@@ -116,7 +118,7 @@ public class NavigationBar : UINavigationBar {
 	the image property, then this value does not need to be set, since the
 	visualLayer's maskToBounds is set to true by default.
 	*/
-	@IBInspectable public var masksToBounds: Bool {
+	@IBInspectable open var masksToBounds: Bool {
 		get {
 			return layer.masksToBounds
 		}
@@ -126,14 +128,14 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the backing layer's backgroundColor.
-	@IBInspectable public override var backgroundColor: UIColor? {
+	@IBInspectable open override var backgroundColor: UIColor? {
 		didSet {
 			barTintColor = backgroundColor
 		}
 	}
 	
 	/// A property that accesses the layer.frame.origin.x property.
-	@IBInspectable public var x: CGFloat {
+	@IBInspectable open var x: CGFloat {
 		get {
 			return layer.frame.origin.x
 		}
@@ -143,7 +145,7 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the layer.frame.origin.y property.
-	@IBInspectable public var y: CGFloat {
+	@IBInspectable open var y: CGFloat {
 		get {
 			return layer.frame.origin.y
 		}
@@ -158,7 +160,7 @@ public class NavigationBar : UINavigationBar {
 	value that is not .None, the height will be adjusted to maintain the correct
 	shape.
 	*/
-	@IBInspectable public var width: CGFloat {
+	@IBInspectable open var width: CGFloat {
 		get {
 			return layer.frame.size.width
 		}
@@ -173,7 +175,7 @@ public class NavigationBar : UINavigationBar {
 	value that is not .None, the width will be adjusted to maintain the correct
 	shape.
 	*/
-	@IBInspectable public var height: CGFloat {
+	@IBInspectable open var height: CGFloat {
 		get {
 			return layer.frame.size.height
 		}
@@ -183,14 +185,14 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the backing layer's shadowColor.
-	@IBInspectable public var shadowColor: UIColor? {
+	@IBInspectable open var shadowColor: UIColor? {
 		didSet {
-			layer.shadowColor = shadowColor?.CGColor
+			layer.shadowColor = shadowColor?.cgColor
 		}
 	}
 	
 	/// A property that accesses the backing layer's shadowOffset.
-	@IBInspectable public var shadowOffset: CGSize {
+	@IBInspectable open var shadowOffset: CGSize {
 		get {
 			return layer.shadowOffset
 		}
@@ -200,7 +202,7 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the backing layer's shadowOpacity.
-	@IBInspectable public var shadowOpacity: Float {
+	@IBInspectable open var shadowOpacity: Float {
 		get {
 			return layer.shadowOpacity
 		}
@@ -210,7 +212,7 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the backing layer's shadowRadius.
-	@IBInspectable public var shadowRadius: CGFloat {
+	@IBInspectable open var shadowRadius: CGFloat {
 		get {
 			return layer.shadowRadius
 		}
@@ -224,7 +226,7 @@ public class NavigationBar : UINavigationBar {
 	for the backing layer. This is the preferred method of setting depth
 	in order to maintain consitency across UI objects.
 	*/
-	public var depth: MaterialDepth = .None {
+	open var depth: MaterialDepth = .none {
 		didSet {
 			let value: MaterialDepthType = MaterialDepthToValue(depth)
 			shadowOffset = value.offset
@@ -234,14 +236,14 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A preset property to set the borderWidth.
-	public var borderWidthPreset: MaterialBorder = .None {
+	open var borderWidthPreset: MaterialBorder = .none {
 		didSet {
 			borderWidth = MaterialBorderToValue(borderWidthPreset)
 		}
 	}
 	
 	/// A property that accesses the layer.borderWith.
-	@IBInspectable public var borderWidth: CGFloat {
+	@IBInspectable open var borderWidth: CGFloat {
 		get {
 			return layer.borderWidth
 		}
@@ -251,12 +253,12 @@ public class NavigationBar : UINavigationBar {
 	}
 	
 	/// A property that accesses the layer.borderColor property.
-	@IBInspectable public var borderColor: UIColor? {
+	@IBInspectable open var borderColor: UIColor? {
 		get {
-			return nil == layer.borderColor ? nil : UIColor(CGColor: layer.borderColor!)
+			return nil == layer.borderColor ? nil : UIColor(cgColor: layer.borderColor!)
 		}
 		set(value) {
-			layer.borderColor = value?.CGColor
+			layer.borderColor = value?.cgColor
 		}
 	}
 	
@@ -282,26 +284,27 @@ public class NavigationBar : UINavigationBar {
 	
 	/// A convenience initializer.
 	public convenience init() {
-		self.init(frame: CGRectZero)
+		self.init(frame: CGRect.zero)
 	}
 	
-	public override func intrinsicContentSize() -> CGSize {
+	open override var intrinsicContentSize : CGSize {
 		switch navigationBarStyle {
-		case .Tiny:
-			return CGSizeMake(superview?.bounds.width ?? MaterialDevice.width, 32)
-		case .Default:
-			return CGSizeMake(superview?.bounds.width ?? MaterialDevice.width, 44)
-		case .Medium:
-			return CGSizeMake(superview?.bounds.width ?? MaterialDevice.width, 56)
+		case .tiny:
+			return CGSize(width: MaterialDevice.width, height: 32)
+		case .default:
+			return CGSize(width: MaterialDevice.width, height: 44)
+		case .medium:
+			return CGSize(width: MaterialDevice.width, height: 56)
 		}
 	}
-
-	public override func sizeThatFits(size: CGSize) -> CGSize {
-		return intrinsicContentSize()
+	
+	open override func sizeThatFits(_ size: CGSize) -> CGSize {
+		return intrinsicContentSize
 	}
 	
-	public override func layoutSubviews() {
+	open override func layoutSubviews() {
 		super.layoutSubviews()
+		
 		if let v: UINavigationItem = topItem {
 			layoutNavigationItem(v)
 		}
@@ -311,8 +314,8 @@ public class NavigationBar : UINavigationBar {
 		}
 	}
 	
-	public override func pushNavigationItem(item: UINavigationItem, animated: Bool) {
-		super.pushNavigationItem(item, animated: animated)
+	open override func pushItem(_ item: UINavigationItem, animated: Bool) {
+		super.pushItem(item, animated: animated)
 		layoutNavigationItem(item)
 	}
 	
@@ -320,7 +323,7 @@ public class NavigationBar : UINavigationBar {
 	Lays out the UINavigationItem.
 	- Parameter item: A UINavigationItem to layout.
 	*/
-	internal func layoutNavigationItem(item: UINavigationItem) {
+	internal func layoutNavigationItem(_ item: UINavigationItem) {
 		if willRenderView {
 			prepareItem(item)
 			
@@ -329,8 +332,8 @@ public class NavigationBar : UINavigationBar {
 					if let g: Int = Int(width / gridFactor) {
 						let columns: Int = g + 1
 						
-						titleView.frame.origin = CGPointZero
-						titleView.frame.size = intrinsicContentSize()
+						titleView.frame.origin = CGPoint.zero
+						titleView.frame.size = intrinsicContentSize
 						titleView.grid.views = []
 						titleView.grid.axis.columns = columns
 						
@@ -339,8 +342,8 @@ public class NavigationBar : UINavigationBar {
 						// leftControls
 						if let v: Array<UIControl> = item.leftControls {
 							for c in v {
-								let w: CGFloat = c.intrinsicContentSize().width
-								(c as? UIButton)?.contentEdgeInsets = UIEdgeInsetsZero
+								let w: CGFloat = c.intrinsicContentSize.width
+								(c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
 								c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
 								
 								let q: Int = Int(w / gridFactor)
@@ -352,15 +355,15 @@ public class NavigationBar : UINavigationBar {
 								titleView.grid.views?.append(c)
 							}
 						}
-	
+						
 						titleView.addSubview(contentView)
 						titleView.grid.views?.append(contentView)
 						
 						// rightControls
 						if let v: Array<UIControl> = item.rightControls {
 							for c in v {
-								let w: CGFloat = c.intrinsicContentSize().width
-								(c as? UIButton)?.contentEdgeInsets = UIEdgeInsetsZero
+								let w: CGFloat = c.intrinsicContentSize.width
+								(c as? UIButton)?.contentEdgeInsets = UIEdgeInsets.zero
 								c.frame.size.height = titleView.frame.size.height - contentInset.top - contentInset.bottom
 								
 								let q: Int = Int(w / gridFactor)
@@ -372,43 +375,46 @@ public class NavigationBar : UINavigationBar {
 								titleView.grid.views?.append(c)
 							}
 						}
-	
+						
 						titleView.grid.contentInset = contentInset
 						titleView.grid.spacing = spacing
 						titleView.grid.reloadLayout()
 						
 						// contentView alignment.
-						if let titleLabel: UILabel = item.titleLabel {
-							if let _: String = titleLabel.text {
-								if nil == titleLabel.superview {
-									contentView.addSubview(titleLabel)
-								}
-								
-								if let detailLabel: UILabel = item.detailLabel {
-									if let _: String = detailLabel.text {
-										if nil == detailLabel.superview {
-											contentView.addSubview(detailLabel)
-										}
-										
-										titleLabel.sizeToFit()
-										detailLabel.sizeToFit()
-										
-										let diff: CGFloat = (contentView.frame.height - titleLabel.frame.height - detailLabel.frame.height) / 2
-										titleLabel.frame.size.height += diff
-										titleLabel.frame.size.width = contentView.frame.width
-										detailLabel.frame.size.height += diff
-										detailLabel.frame.size.width = contentView.frame.width
-										detailLabel.frame.origin.y = titleLabel.frame.height
-									} else {
-										detailLabel.removeFromSuperview()
-										titleLabel.frame = contentView.bounds
-									}
-								}
-							} else {
-								titleLabel.removeFromSuperview()
-								contentView.grid.reloadLayout()
+						if nil != item.title && "" != item.title {
+							if nil == item.titleLabel.superview {
+								contentView.addSubview(item.titleLabel)
 							}
+							item.titleLabel.frame = contentView.bounds
+						} else {
+							item.titleLabel.removeFromSuperview()
 						}
+						
+						if nil != item.detail && "" != item.detail {
+							if nil == item.detailLabel.superview {
+								contentView.addSubview(item.detailLabel)
+							}
+							
+							if nil == item.titleLabel.superview {
+								item.detailLabel.frame = contentView.bounds
+							} else {
+								item.titleLabel.sizeToFit()
+								item.detailLabel.sizeToFit()
+								
+								let diff: CGFloat = (contentView.frame.height - item.titleLabel.frame.height - item.detailLabel.frame.height) / 2
+								
+								item.titleLabel.frame.size.height += diff
+								item.titleLabel.frame.size.width = contentView.frame.width
+								
+								item.detailLabel.frame.size.height += diff
+								item.detailLabel.frame.size.width = contentView.frame.width
+								item.detailLabel.frame.origin.y = item.titleLabel.frame.height
+							}
+						} else {
+							item.detailLabel.removeFromSuperview()
+						}
+						
+						contentView.grid.reloadLayout()
 					}
 				}
 			}
@@ -422,24 +428,25 @@ public class NavigationBar : UINavigationBar {
 	The super.prepareView method should always be called immediately
 	when subclassing.
 	*/
-	public func prepareView() {
-		barStyle = .Black
-		translucent = false
-		depth = .Depth1
-		spacingPreset = .Spacing1
-		contentInsetPreset = .Square1
+	open func prepareView() {
+        barStyle = .black
+		isTranslucent = false
+		depth = .depth1
+		spacingPreset = .spacing1
+		contentInsetPreset = .square1
 		contentScaleFactor = MaterialDevice.scale
 		backButtonImage = MaterialIcon.cm.arrowBack
-		let image: UIImage? = UIImage.imageWithColor(MaterialColor.clear, size: CGSizeMake(1, 1))
+		let image: UIImage? = UIImage.imageWithColor(MaterialColor.clear, size: CGSize(width: 1, height: 1))
 		shadowImage = image
-		setBackgroundImage(image, forBarMetrics: .Default)
+		setBackgroundImage(image, for: .default)
+		backgroundColor = MaterialColor.white
 	}
 	
 	/**
 	Prepare the item by setting the title property to equal an empty string.
 	- Parameter item: A UINavigationItem to layout.
 	*/
-	private func prepareItem(item: UINavigationItem) {
+	fileprivate func prepareItem(_ item: UINavigationItem) {
 		item.hidesBackButton = false
 		item.setHidesBackButton(true, animated: false)
 	}
@@ -449,9 +456,9 @@ public class NavigationBar : UINavigationBar {
 	- Parameter item: A UINavigationItem to layout.
 	- Returns: A UIView, which is the item.titleView.
 	*/
-	private func prepareTitleView(item: UINavigationItem) -> UIView {
+	fileprivate func prepareTitleView(_ item: UINavigationItem) -> UIView {
 		if nil == item.titleView {
-			item.titleView = UIView(frame: CGRectZero)
+			item.titleView = UIView(frame: CGRect.zero)
 		}
 		return item.titleView!
 	}
@@ -461,11 +468,11 @@ public class NavigationBar : UINavigationBar {
 	- Parameter item: A UINavigationItem to layout.
 	- Returns: A UIView, which is the item.contentView.
 	*/
-	private func prepareContentView(item: UINavigationItem) -> UIView {
+	fileprivate func prepareContentView(_ item: UINavigationItem) -> UIView {
 		if nil == item.contentView {
-			item.contentView = UIView(frame: CGRectZero)
+			item.contentView = UIView(frame: CGRect.zero)
 		}
-		item.contentView!.grid.axis.direction = .Vertical
+		item.contentView!.grid.axis.direction = .vertical
 		return item.contentView!
 	}
 }

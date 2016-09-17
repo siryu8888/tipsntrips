@@ -16,18 +16,18 @@ class TipsDrop: NSObject {
     var tipsDropContent:String = ""
     var tipsDropCategoryID:String = ""
     var tipsDropCategoryName:String = ""
-    var tipsDropCategoryImgUrl: NSURL = NSURL()
-    var tipsDropCategoryImgUrlInactive : NSURL = NSURL()
+    var tipsDropCategoryImgUrl: URL = URL()
+    var tipsDropCategoryImgUrlInactive : URL = URL()
     
     var tipsDropLike:Int = 0
     var tipsDropRating:Int = 0
     var tipsDropComment:Int = 0
     var tipsDropRater:Int = 0
-    var tipsDropImgUrl : NSURL = NSURL()
+    var tipsDropImgUrl : URL = URL()
     var tipsDropLikeStatus : String = ""
     
     var tipsDropAuthorName:String? = ""
-    var tipsDropAuthorImgUrl:NSURL? = NSURL()
+    var tipsDropAuthorImgUrl:URL? = URL()
     var tipsDropAuthorLoginType:String = ""
     var tipsDropAuthorUID:String = ""
     var timestamp:String = ""

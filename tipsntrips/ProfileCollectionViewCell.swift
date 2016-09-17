@@ -36,7 +36,7 @@ class ProfileCollectionViewCell: UICollectionViewCell {
     }
 
     
-    @IBAction func editProfileClicked(sender: AnyObject) {
+    @IBAction func editProfileClicked(_ sender: AnyObject) {
         
     }
    

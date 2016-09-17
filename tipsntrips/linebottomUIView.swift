@@ -4,15 +4,15 @@ import UIColor_Hex_Swift
 
 class linebottomUIView: UIView {
 
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetLineWidth(context, 0.7)
-        CGContextSetStrokeColorWithColor(context, UIColor(rgba: "#ABADB0").CGColor)
+        context?.setLineWidth(0.7)
+        context.setStrokeColor(UIColor(rgba: "#ABADB0").cgColor)
         
-        CGContextMoveToPoint(context, 10, self.frame.height)
-        CGContextAddLineToPoint(context, self.frame.width - 10, self.frame.height)
+        context?.move(to: CGPoint(x: 10, y: self.frame.height))
+        context?.addLine(to: CGPoint(x: self.frame.width - 10, y: self.frame.height))
         
-        CGContextStrokePath(context)
+        context?.strokePath()
         
     }
 

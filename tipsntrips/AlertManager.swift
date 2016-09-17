@@ -12,10 +12,10 @@ class AlertManager: NSObject {
 
     static let sharedInstance = AlertManager()
     
-    func alertOKOnly(title:String,msg:String) -> UIAlertController
+    func alertOKOnly(_ title:String,msg:String) -> UIAlertController
     {
-        let alertController = UIAlertController(title: title, message: msg, preferredStyle: .Alert)
-        let defaultAction = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alertController.addAction(defaultAction)
         return alertController
     }

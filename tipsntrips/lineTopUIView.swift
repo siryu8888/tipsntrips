@@ -17,16 +17,16 @@ class lineTopUIView: UIView {
         // Drawing code
     }
     */
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetLineWidth(context, 0.7)
-        CGContextSetStrokeColorWithColor(context, UIColor(rgba: "#ABADB0").CGColor)
+        context?.setLineWidth(0.7)
+        context.setStrokeColor(UIColor(rgba: "#ABADB0").cgColor)
         
-        CGContextMoveToPoint(context, 10, 5)
-        CGContextAddLineToPoint(context, self.frame.width - 10, 5)
+        context?.move(to: CGPoint(x: 10, y: 5))
+        context?.addLine(to: CGPoint(x: self.frame.width - 10, y: 5))
         
-        CGContextStrokePath(context)
+        context?.strokePath()
         
     }
 

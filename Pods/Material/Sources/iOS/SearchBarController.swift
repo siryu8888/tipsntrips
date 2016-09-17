@@ -42,23 +42,23 @@ public extension UIViewController {
 			if viewController is SearchBarController {
 				return viewController as? SearchBarController
 			}
-			viewController = viewController?.parentViewController
+			viewController = viewController?.parent
 		}
 		return nil
 	}
 }
 
-public class SearchBarController : BarController {
+open class SearchBarController : RootController {
 	/// Reference to the SearchBar.
-	public private(set) var searchBar: SearchBar!
+	open fileprivate(set) var searchBar: SearchBar!
 	
-	public override func viewWillLayoutSubviews() {
-		super.viewWillLayoutSubviews()
-		layoutSubviews()
-	}
-	
-	/// Layout subviews.
-	public func layoutSubviews() {
+	/**
+	To execute in the order of the layout chain, override this
+	method. LayoutSubviews should be called immediately, unless you
+	have a certain need.
+	*/
+	open override func layoutSubviews() {
+		super.layoutSubviews()
 		if let v: SearchBar = searchBar {
 			v.grid.layoutInset.top = .iPhone == MaterialDevice.type && MaterialDevice.isLandscape ? 0 : 20
 			
@@ -81,13 +81,13 @@ public class SearchBarController : BarController {
 	The super.prepareView method should always be called immediately
 	when subclassing.
 	*/
-	public override func prepareView() {
+	open override func prepareView() {
 		super.prepareView()
 		prepareSearchBar()
 	}
 	
 	/// Prepares the SearchBar.
-	private func prepareSearchBar() {
+	fileprivate func prepareSearchBar() {
 		if nil == searchBar {
 			searchBar = SearchBar()
 			searchBar.zPosition = 1000

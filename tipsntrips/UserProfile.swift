@@ -16,7 +16,7 @@ class UserProfile: NSObject {
     var name:String
     var email:String?
     var bio:String?
-    var photo_url:NSURL?
+    var photo_url:URL?
     
     init(name:String,uid:String) {
         self.name = name
@@ -29,15 +29,15 @@ class UserProfile: NSObject {
      * SETTER
      * ============
      */
-    func setUserEmail(email:String)
+    func setUserEmail(_ email:String)
     {
         self.email = email
     }
-    func setUserBio(bio:String)
+    func setUserBio(_ bio:String)
     {
         self.bio = bio
     }
-    func setPhotoUrl(photo_url:NSURL)
+    func setPhotoUrl(_ photo_url:URL)
     {
         self.photo_url = photo_url
     }
@@ -59,7 +59,7 @@ class UserProfile: NSObject {
         return self.bio!
     }
     
-    func getPhotoUrl()->NSURL
+    func getPhotoUrl()->URL
     {
         return self.photo_url!
     }
